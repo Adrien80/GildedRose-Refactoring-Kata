@@ -53,41 +53,45 @@ export class GildedRose {
             //update "classic" items qualtiy by decreasing it by 1 
             if (item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert') {
                 if (item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros') {
-                    item.quality = item.quality - 1;
+                    item.quality = (item.name.includes("Conjured")) ?
+                        item.quality - 2 :
+                        item.quality - 1;
                 }
             } else {
                 //update aged brie or backstage passes items quality
                 if (item.quality < 50) {
-                    item.quality = item.quality + 1;
+                    item.quality++;
                     if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
                         if (item.sellIn < 11 && item.quality < 50) {
-                            item.quality = item.quality + 1;
+                            item.quality++;
                         }
                         if (item.sellIn < 6 && item.quality < 50) {
-                            item.quality = item.quality + 1;
+                            item.quality++;
                         }
                     }
                 }
             }
             // reduce sellIn value except for legendary item
             if (item.name != 'Sulfuras, Hand of Ragnaros') {
-                item.sellIn = item.sellIn - 1;
+                item.sellIn--;
             }
             // update item quality if the item expiration date is passed for aged brie and backstage items
             if (item.sellIn < 0) {
                 if (item.name != 'Aged Brie') {
                     if (item.name != 'Backstage passes to a TAFKAL80ETC concert') {
                         if (item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros') {
-                            item.quality = item.quality - 1;
+                            item.quality = (item.name.includes("Conjured")) ?
+                                item.quality - 2 :
+                                item.quality - 1;
                         }
                     } else {
                         item.quality = 0;
                     }
                 } else if (item.quality < 50) {
-                    item.quality = item.quality + 1;
+                    item.quality++;
                 }
             }
-        })
+        });
 
         return this.items;
     }

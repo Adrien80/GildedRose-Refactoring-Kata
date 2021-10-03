@@ -19,7 +19,8 @@ describe('GildedRose', () => {
             new Item("Backstage passes to a TAFKAL80ETC concert", 0, 37),
             new Item("Old elixir of the crusader", 0, 16), //
             // this conjured item does not work properly yet
-            new Item("Conjured Mana Cake", 3, 6)
+            new Item("Conjured Mana Cake", 3, 6),
+            new Item("Conjured Mana Cake", 0, 6)
         ];
         gildedRose = new GildedRose([...items]);
     })
@@ -96,6 +97,18 @@ describe('GildedRose', () => {
             expect(gildedRose.items[12].quality).to.equal(16);
             const items = gildedRose.updateQuality();
             expect(items[12].quality).to.equal(14);
+        });
+
+        it("should reduce by 2 the quality value for invoked items", () => {
+            expect(gildedRose.items[13].quality).to.equal(6);
+            const items = gildedRose.updateQuality();
+            expect(items[13].quality).to.equal(4);
+        });
+
+        it("should reduce by 4 the quality value for invoked items which have a sellIn to 0", () => {
+            expect(gildedRose.items[14].quality).to.equal(6);
+            const items = gildedRose.updateQuality();
+            expect(items[14].quality).to.equal(2);
         });
         
     });
