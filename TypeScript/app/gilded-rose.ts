@@ -46,53 +46,78 @@ export class GildedRose {
     }
 
     /**
+     * update backstage item
+     * @param item backstageItem
+     */
+    updateBackStageItem(item: Item) {
+        item.sellIn--;
+        if (item.sellIn < 0) {
+            item.quality = 0;
+        } else {
+            let increaseValue = 1;
+            if (item.sellIn < 11) {
+                increaseValue = 2;
+            }
+            if (item.sellIn < 6) {
+                increaseValue = 3;
+            }
+            item.quality = Math.min(item.quality + increaseValue, 50);
+        }
+    }
+
+    /**
+     * update aged brie item
+     * 
+     * @param item aged brie item
+     */
+    updateAgedBrieItem(item: Item): void {
+        item.sellIn--;
+        const newQuality = (item.sellIn >= 0) ? item.quality + 1 : item.quality + 2;
+        item.quality = Math.min(newQuality, 50);
+    }
+
+    /**
+     * update common brie item
+     * @param item common item
+     * @param conjured is conjured item
+     */
+    updateCommonItem(item: Item, conjured: boolean): void {
+        // multiplier is used to alter the decrease value of conjured item compare to the usual item
+        const multiplier = conjured ? 2 : 1;
+        item.quality = this.decreaseItemQualityValue(item.quality, multiplier);
+        item.sellIn--;
+        if (item.sellIn < 0) {
+            item.quality = this.decreaseItemQualityValue(item.quality, multiplier);
+        }
+    }
+
+    /**
+     * decrease item quality value based on its current value and the multiplier
+     * @param itemQuality current item quality value
+     * @param multiplier number used to calculate the new item value (*2 for conjured item)
+     */
+    decreaseItemQualityValue(itemQuality: number, multiplier: number): number {
+        const newQuality = itemQuality - (1 * multiplier);
+        return Math.max(newQuality, 0);
+    }
+
+    /**
      * update gilded rose items
      */
-    updateQuality() {
+    updateQuality(): Item[] {
         this.items.forEach((item: Item) => {
-            //update "classic" items qualtiy by decreasing it by 1 
-            if (item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert') {
-                if (item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros') {
-                    item.quality = (item.name.includes("Conjured")) ?
-                        item.quality - 2 :
-                        item.quality - 1;
+            if (item.name !== "Sulfuras, Hand of Ragnaros") {
+                if (item.name === "Aged Brie") {
+                    this.updateAgedBrieItem(item);
                 }
-            } else {
-                //update aged brie or backstage passes items quality
-                if (item.quality < 50) {
-                    item.quality++;
-                    if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (item.sellIn < 11 && item.quality < 50) {
-                            item.quality++;
-                        }
-                        if (item.sellIn < 6 && item.quality < 50) {
-                            item.quality++;
-                        }
-                    }
+                else if (item.name === "Backstage passes to a TAFKAL80ETC concert") {
+                    this.updateBackStageItem(item);
                 }
-            }
-            // reduce sellIn value except for legendary item
-            if (item.name != 'Sulfuras, Hand of Ragnaros') {
-                item.sellIn--;
-            }
-            // update item quality if the item expiration date is passed for aged brie and backstage items
-            if (item.sellIn < 0) {
-                if (item.name != 'Aged Brie') {
-                    if (item.name != 'Backstage passes to a TAFKAL80ETC concert') {
-                        if (item.quality > 0 && item.name != 'Sulfuras, Hand of Ragnaros') {
-                            item.quality = (item.name.includes("Conjured")) ?
-                                item.quality - 2 :
-                                item.quality - 1;
-                        }
-                    } else {
-                        item.quality = 0;
-                    }
-                } else if (item.quality < 50) {
-                    item.quality++;
+                else {
+                    this.updateCommonItem(item, item.name.includes("Conjured"));
                 }
             }
         });
-
         return this.items;
     }
 }

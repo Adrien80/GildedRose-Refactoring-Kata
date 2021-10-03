@@ -20,7 +20,8 @@ describe('GildedRose', () => {
             new Item("Old elixir of the crusader", 0, 16), //
             // this conjured item does not work properly yet
             new Item("Conjured Mana Cake", 3, 6),
-            new Item("Conjured Mana Cake", 0, 6)
+            new Item("Conjured Mana Cake", 0, 6),
+            new Item("+5 Dexterity Vest", 5, 0)
         ];
         gildedRose = new GildedRose([...items]);
     })
@@ -30,6 +31,12 @@ describe('GildedRose', () => {
             const items = gildedRose.updateQuality();
             expect(items[0].quality).to.equal(19);
         });
+
+        it("should never have an item which have it's quality < 0", () => {
+            expect(gildedRose.items[15].quality).to.equal(0);
+            const items = gildedRose.updateQuality();
+            expect(items[15].quality).to.equal(0);
+        })
 
         it("shouldn't update quality value for aged brie", () => {
             expect(gildedRose.items[1].quality).to.equal(0);
